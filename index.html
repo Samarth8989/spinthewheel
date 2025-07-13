@@ -5,356 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joko Spin the Wheel</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+       /* ✨ Blue-themed replacements */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #f8f9fc 0%, #e0f2fe 100%);
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f8fffe 0%, #f0fff4 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+.game-container {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+}
 
-        .game-container {
-            background: white;
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(76, 217, 100, 0.1);
-        }
+.logo-icon {
+    background: #3B82F6;
+}
 
-        .header {
-            margin-bottom: 32px;
-        }
+.wheel-wrapper {
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-        }
+.wheel-bg {
+    background: conic-gradient(
+        from 0deg,
+        #3B82F6 0deg 90deg,
+        #2563EB 90deg 180deg,
+        #1E40AF 180deg 270deg,
+        #F43F5E 270deg 360deg
+    );
+}
 
-        .logo-icon {
-            width: 28px;
-            height: 28px;
-            background: #4cd964;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 900;
-            font-size: 16px;
-        }
+.wheel-pointer {
+    border-top: 20px solid #3B82F6;
+}
 
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            font-weight: 400;
-            margin-bottom: 8px;
-        }
+.wheel-center {
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
 
-        .partner-brand {
-            background: #f8f9fa;
-            color: #888;
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-weight: 500;
-        }
+.wheel-center.spinning {
+    animation: pulse 0.6s infinite alternate;
+}
 
-        .wheel-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            margin: 0 auto 32px;
-        }
+.result-display {
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
 
-        .wheel-wrapper {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(76, 217, 100, 0.2);
-            border: 4px solid white;
-        }
+.result-display.better-luck {
+    background: linear-gradient(135deg, #F43F5E, #e11d48);
+}
 
-        .wheel {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform: rotate(0deg);
-            transition: none;
-        }
+.btn-primary {
+    background: #3B82F6;
+    color: white;
+}
 
-        .wheel.spinning {
-            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
+.btn-primary:hover:not(:disabled) {
+    background: #2563EB;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
 
-        /* Create segments using conic gradient for perfect alignment */
-        .wheel-bg {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            background: conic-gradient(
-                from 0deg,
-                #4cd964 0deg 90deg,      /* 1% OFF: 0-90° */
-                #25a244 90deg 180deg,    /* 5% OFF: 90-180° */
-                #1e8e3e 180deg 270deg,   /* 10% OFF: 180-270° */
-                #ff6b6b 270deg 360deg    /* Better Luck: 270-360° */
-            );
-        }
+.status-success {
+    background: #e0f2fe;
+    color: #2563EB;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
 
-        .wheel-text {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .segment-text {
-            position: absolute;
-            color: white;
-            font-weight: 600;
-            font-size: 13px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            transform-origin: center;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        /* Position text in center of each segment */
-        .text-1 {
-            top: 25%;
-            left: 65%;
-            transform: translate(-50%, -50%);
-        }
-
-        .text-2 {
-            top: 65%;
-            left: 65%;
-            transform: translate(-50%, -50%);
-        }
-
-        .text-3 {
-            top: 65%;
-            left: 35%;
-            transform: translate(-50%, -50%);
-        }
-
-        .text-4 {
-            top: 25%;
-            left: 35%;
-            transform: translate(-50%, -50%);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 20px solid #4cd964;
-            z-index: 10;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .wheel-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #4cd964, #2eb950);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 13px;
-            z-index: 10;
-            box-shadow: 0 4px 16px rgba(76, 217, 100, 0.4);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 3px solid white;
-        }
-
-        .wheel-center:hover:not(.disabled) {
-            transform: translate(-50%, -50%) scale(1.05);
-        }
-
-        .wheel-center.spinning {
-            animation: pulse 0.6s infinite alternate;
-        }
-
-        .wheel-center.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .result-display {
-            background: linear-gradient(135deg, #4cd964, #2eb950);
-            color: white;
-            padding: 24px 20px;
-            border-radius: 16px;
-            margin: 24px 0;
-            font-weight: 600;
-            transform: scale(0);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 8px 24px rgba(76, 217, 100, 0.3);
-        }
-
-        .result-display.show {
-            transform: scale(1);
-        }
-
-        .result-display.better-luck {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
-
-        .result-amount {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .result-text {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 120px;
-        }
-
-        .btn-primary {
-            background: #4cd964;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #666;
-            border: 1px solid #e0e0e0;
-        }
-
-        .btn:hover:not(:disabled) {
-            transform: translateY(-1px);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #2eb950;
-            box-shadow: 0 4px 12px rgba(76, 217, 100, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .status-message {
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .status-success {
-            background: #f0fff4;
-            color: #2eb950;
-            border: 1px solid rgba(76, 217, 100, 0.2);
-        }
-
-        .status-info {
-            background: #f8f9fa;
-            color: #666;
-            border: 1px solid #e0e0e0;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #4cd964;
-            animation: confetti-fall 3s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .game-container {
-                padding: 32px 24px;
-                margin: 16px;
-            }
-            
-            .wheel-container {
-                width: 240px;
-                height: 240px;
-            }
-            
-            .segment-text {
-                font-size: 11px;
-            }
-            
-            .buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 200px;
-            }
-        }
+.confetti {
+    background: #3B82F6;
+}
     </style>
 </head>
 <body>
