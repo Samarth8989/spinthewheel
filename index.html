@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joko Spin the Wheel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fffe 0%, #f0fff4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(76, 217, 100, 0.1);
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: #4cd964;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .partner-brand {
+            background: #f8f9fa;
+            color: #888;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 32px;
+        }
+
+        .wheel-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(76, 217, 100, 0.2);
+            border: 4px solid white;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform: rotate(0deg);
+            transition: none;
+        }
+
+        .wheel.spinning {
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        /* Create segments using conic gradient for perfect alignment */
+        .wheel-bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: conic-gradient(
+                from 0deg,
+                #4cd964 0deg 90deg,      /* 1% OFF: 0-90° */
+                #25a244 90deg 180deg,    /* 5% OFF: 90-180° */
+                #1e8e3e 180deg 270deg,   /* 10% OFF: 180-270° */
+                #ff6b6b 270deg 360deg    /* Better Luck: 270-360° */
+            );
+        }
+
+        .wheel-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .segment-text {
+            position: absolute;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transform-origin: center;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* Position text in center of each segment */
+        .text-1 {
+            top: 25%;
+            left: 65%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-2 {
+            top: 65%;
+            left: 65%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-3 {
+            top: 65%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-4 {
+            top: 25%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 20px solid #4cd964;
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #4cd964, #2eb950);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(76, 217, 100, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid white;
+        }
+
+        .wheel-center:hover:not(.disabled) {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .wheel-center.spinning {
+            animation: pulse 0.6s infinite alternate;
+        }
+
+        .wheel-center.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .result-display {
+            background: linear-gradient(135deg, #4cd964, #2eb950);
+            color: white;
+            padding: 24px 20px;
+            border-radius: 16px;
+            margin: 24px 0;
+            font-weight: 600;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 24px rgba(76, 217, 100, 0.3);
+        }
+
+        .result-display.show {
+            transform: scale(1);
+        }
+
+        .result-display.better-luck {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .result-amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: #4cd964;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2eb950;
+            box-shadow: 0 4px 12px rgba(76, 217, 100, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #f0fff4;
+            color: #2eb950;
+            border: 1px solid rgba(76, 217, 100, 0.2);
+        }
+
+        .status-info {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #4cd964;
+            animation: confetti-fall 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+            
+            .wheel-container {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .segment-text {
+                font-size: 11px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                JOKO
+            </div>
+            <div class="subtitle">You've earned a spin!</div>
+            <div class="partner-brand" id="partnerBrand">Partner: Nike Store</div>
+        </div>
+        
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-wrapper">
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg"></div>
+                    <div class="wheel-text">
+                        <div class="segment-text text-1">1% OFF</div>
+                        <div class="segment-text text-2">5% OFF</div>
+                        <div class="segment-text text-3">10% OFF</div>
+                        <div class="segment-text text-4">Better<br>Luck!</div>
+                    </div>
+                </div>
+            </div>
+            <div class="wheel-center" id="spinButton" onclick="spinWheel()">
+                <span id="spinText">SPIN</span>
+            </div>
+        </div>
+        
+        <div class="result-display" id="resultDisplay">
+            <div class="result-amount" id="resultAmount"></div>
+            <div class="result-text" id="resultText"></div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="resetGame()">New Spin</button>
+            <button class="btn btn-secondary" id="claimBtn" onclick="claimReward()" disabled>Claim Reward</button>
+        </div>
+        
+        <div class="status-message status-info" id="statusMessage">
+            Tap SPIN to reveal your reward
+        </div>
+    </div>
+
+    <script>
+        const partnerBrands = ['Nike Store', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Myntra', 'Flipkart', 'Amazon'];
+        let isSpinning = false;
+        let spinCount = 0;
+
+        // Predefined sequence
+        const spinSequence = [
+            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
+            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
+            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
+            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
+            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF'
+        ];
+
+        // Segment configuration - which angle range each segment occupies
+        const segments = [
+            { name: '1% OFF', startAngle: 0, endAngle: 90 },
+            { name: '5% OFF', startAngle: 90, endAngle: 180 },
+            { name: '10% OFF', startAngle: 180, endAngle: 270 },
+            { name: 'Better luck next time!', startAngle: 270, endAngle: 360 }
+        ];
+
+        function getTargetRotation(targetResult, currentAngle) {
+            // Find the segment that matches our target result
+            const targetSegment = segments.find(seg => seg.name === targetResult);
+            if (!targetSegment) return 0;
+
+            // Calculate the center angle of the target segment
+            const segmentCenter = (targetSegment.startAngle + targetSegment.endAngle) / 2;
+
+            // The pointer is at the top (0°/360°), so we need to rotate the wheel
+            // to position the target segment at the top
+            // Since we're rotating the wheel, we need to rotate in the opposite direction
+            let targetRotation = 360 - segmentCenter;
+
+            // Normalize to 0-360 range
+            targetRotation = targetRotation % 360;
+
+            // Calculate how much we need to rotate from current position
+            const currentNormalized = ((currentAngle % 360) + 360) % 360;
+            let rotationNeeded = targetRotation - currentNormalized;
+
+            // Always rotate forward (clockwise) and add multiple full rotations
+            if (rotationNeeded <= 0) {
+                rotationNeeded += 360;
+            }
+
+            // Add 8-12 full rotations for visual effect
+            const fullRotations = 8 + Math.floor(Math.random() * 5);
+            const totalRotation = currentAngle + rotationNeeded + (fullRotations * 360);
+
+            return totalRotation;
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            
+            const spinButton = document.getElementById('spinButton');
+            const wheel = document.getElementById('wheel');
+            
+            spinButton.classList.add('spinning');
+            document.getElementById('spinText').textContent = 'SPINNING...';
+            document.getElementById('resultDisplay').classList.remove('show');
+            document.getElementById('claimBtn').disabled = true;
+            
+            // Get target result for this spin
+            const targetResult = spinSequence[spinCount % spinSequence.length];
+            spinCount++;
+            
+            // Get current rotation angle
+            const computedStyle = window.getComputedStyle(wheel);
+            const transform = computedStyle.transform;
+            let currentAngle = 0;
+            
+            if (transform && transform !== 'none') {
+                const values = transform.split('(')[1].split(')')[0].split(',');
+                const a = parseFloat(values[0]);
+                const b = parseFloat(values[1]);
+                currentAngle = Math.atan2(b, a) * (180 / Math.PI);
+            }
+            
+            // Calculate target rotation
+            const targetRotation = getTargetRotation(targetResult, currentAngle);
+            
+            // Remove transition class and set current position
+            wheel.classList.remove('spinning');
+            wheel.style.transform = `rotate(${currentAngle}deg)`;
+            
+            // Force browser to apply the change
+            wheel.offsetHeight;
+            
+            // Add transition and set target rotation
+            wheel.classList.add('spinning');
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            
+            // Show result after 4 seconds
+            setTimeout(() => {
+                showResult(targetResult);
+                isSpinning = false;
+                spinButton.classList.remove('spinning');
+                document.getElementById('spinText').textContent = 'COMPLETE';
+                spinButton.classList.add('disabled');
+            }, 4000);
+        }
+
+        function showResult(resultText) {
+            const result = {
+                amount: resultText,
+                text: resultText === 'Better luck next time!' ? 'Try again with your next purchase' : 'Your next purchase!'
+            };
+            
+            document.getElementById('resultAmount').textContent = result.amount;
+            document.getElementById('resultText').textContent = result.text;
+            
+            const resultDisplay = document.getElementById('resultDisplay');
+            resultDisplay.classList.remove('better-luck');
+            
+            if (result.amount === 'Better luck next time!') {
+                resultDisplay.classList.add('better-luck');
+                document.getElementById('claimBtn').disabled = true;
+                document.getElementById('statusMessage').innerHTML = 
+                    '<div class="status-info">🎯 Keep trying! More chances with your next purchase</div>';
+            } else {
+                document.getElementById('claimBtn').disabled = false;
+                document.getElementById('statusMessage').innerHTML = 
+                    '<div class="status-success">🎉 Congratulations! You won a discount!</div>';
+                createConfetti();
+            }
+            
+            resultDisplay.classList.add('show');
+        }
+
+        function createConfetti() {
+            const colors = ['#4cd964', '#2eb950', '#25a244', '#1e8e3e'];
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 50);
+            }
+        }
+
+        function resetGame() {
+            isSpinning = false;
+            
+            const spinButton = document.getElementById('spinButton');
+            spinButton.classList.remove('disabled');
+            document.getElementById('spinText').textContent = 'SPIN';
+            
+            document.getElementById('resultDisplay').classList.remove('show', 'better-luck');
+            document.getElementById('claimBtn').disabled = true;
+            
+            const randomBrand = partnerBrands[Math.floor(Math.random() * partnerBrands.length)];
+            document.getElementById('partnerBrand').textContent = `Partner: ${randomBrand}`;
+            
+            document.getElementById('statusMessage').innerHTML = 
+                '<div class="status-info">Tap SPIN to reveal your reward</div>';
+        }
+
+        function claimReward() {
+            const claimBtn = document.getElementById('claimBtn');
+            const originalText = claimBtn.textContent;
+            claimBtn.textContent = 'Claimed! ✓';
+            claimBtn.style.background = '#4cd964';
+            claimBtn.style.color = 'white';
+            claimBtn.disabled = true;
+            
+            document.getElementById('statusMessage').innerHTML = 
+                '<div class="status-success">✅ Discount applied! Use at checkout with your Joko account</div>';
+            
+            setTimeout(() => {
+                claimBtn.textContent = originalText;
+                claimBtn.style.background = '#f8f9fa';
+                claimBtn.style.color = '#666';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
