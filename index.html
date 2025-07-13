@@ -68,8 +68,14 @@
         }
 
         .partner-brand {
-  display: none !important;
-}
+            background: #f8f9fa;
+            color: #888;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 500;
+        }
 
         .wheel-container {
             position: relative;
@@ -107,11 +113,13 @@
             position: absolute;
             background: conic-gradient(
   from 0deg,
-  #3B82F6 0deg 90deg,     /* +1 Diamond */
-  #2563EB 90deg 180deg,   /* +2 Diamonds */
-  #1E40AF 180deg 270deg,  /* +1 Heart */
-  #94A3B8 270deg 360deg   /* +3 Hearts */
+  #3B82F6 0deg 90deg,      /* +1 Diamond */
+  #2563EB 90deg 180deg,    /* +2 Diamonds */
+  #1E3A8A 180deg 270deg,   /* +1 Heart */
+  #60A5FA 270deg 360deg    /* +3 Hearts */
 );
+        }
+
         .wheel-text {
             position: absolute;
             width: 100%;
@@ -366,11 +374,10 @@
                 <div class="wheel" id="wheel">
                     <div class="wheel-bg"></div>
                     <div class="wheel-text">
-                  <div class="segment-text text-1">💎 +1 Diamond</div>
-<div class="segment-text text-2">💎 +2 Diamonds</div>
-<div class="segment-text text-3">❤️ +1 Heart</div>
-<div class="segment-text text-4">❤️ +3 Hearts</div>
-
+                        <div class="segment-text text-1">1% OFF</div>
+                        <div class="segment-text text-2">5% OFF</div>
+                        <div class="segment-text text-3">10% OFF</div>
+                        <div class="segment-text text-4">Better<br>Luck!</div>
                     </div>
                 </div>
             </div>
