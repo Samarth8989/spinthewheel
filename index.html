@@ -249,7 +249,6 @@
 
         .buttons {
             display: flex;
-            gap: 12px;
             justify-content: center;
             margin-bottom: 24px;
         }
@@ -377,7 +376,7 @@
                         <div class="segment-text text-1">1% OFF</div>
                         <div class="segment-text text-2">5% OFF</div>
                         <div class="segment-text text-3">10% OFF</div>
-                        <div class="segment-text text-4">Better<br>Luck!</div>
+                        <div class="segment-text text-4">2%<br>Cashback</div>
                     </div>
                 </div>
             </div>
@@ -392,7 +391,6 @@
         </div>
         
         <div class="buttons">
-            <button class="btn btn-primary" onclick="resetGame()">New Spin</button>
             <button class="btn btn-secondary" id="claimBtn" onclick="claimReward()" disabled>Claim Reward</button>
         </div>
         
@@ -408,11 +406,11 @@
 
         // Predefined sequence
         const spinSequence = [
-            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
-            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
-            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
-            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF',
-            '5% OFF', '10% OFF', 'Better luck next time!', '1% OFF'
+            '5% OFF', '10% OFF', '2% Cashback', '1% OFF',
+            '5% OFF', '10% OFF', '2% Cashback', '1% OFF',
+            '5% OFF', '10% OFF', '2% Cashback', '1% OFF',
+            '5% OFF', '10% OFF', '2% Cashback', '1% OFF',
+            '5% OFF', '10% OFF', '2% Cashback', '1% OFF'
         ];
 
         // Segment configuration - which angle range each segment occupies
@@ -420,7 +418,7 @@
             { name: '1% OFF', startAngle: 0, endAngle: 90 },
             { name: '5% OFF', startAngle: 90, endAngle: 180 },
             { name: '10% OFF', startAngle: 180, endAngle: 270 },
-            { name: 'Better luck next time!', startAngle: 270, endAngle: 360 }
+            { name: '2% Cashback', startAngle: 270, endAngle: 360 }
         ];
 
         function getTargetRotation(targetResult, currentAngle) {
@@ -511,7 +509,7 @@
         function showResult(resultText) {
             const result = {
                 amount: resultText,
-                text: resultText === 'Better luck next time!' ? 'Try again with your next purchase' : 'Your next purchase!'
+                text: resultText === '2% Cashback' ? 'On your next purchase!' : 'Your next purchase!'
             };
             
             document.getElementById('resultAmount').textContent = result.amount;
@@ -520,17 +518,11 @@
             const resultDisplay = document.getElementById('resultDisplay');
             resultDisplay.classList.remove('better-luck');
             
-            if (result.amount === 'Better luck next time!') {
-                resultDisplay.classList.add('better-luck');
-                document.getElementById('claimBtn').disabled = true;
-                document.getElementById('statusMessage').innerHTML = 
-                    '<div class="status-info">🎯 Keep trying! More chances with your next purchase</div>';
-            } else {
-                document.getElementById('claimBtn').disabled = false;
-                document.getElementById('statusMessage').innerHTML = 
-                    '<div class="status-success">🎉 Congratulations! You won a discount!</div>';
-                createConfetti();
-            }
+            // Always enable claim button since all results are rewards now
+            document.getElementById('claimBtn').disabled = false;
+            document.getElementById('statusMessage').innerHTML = 
+                '<div class="status-success">🎉 Congratulations! You won a reward!</div>';
+            createConfetti();
             
             resultDisplay.classList.add('show');
         }
